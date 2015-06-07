@@ -36,3 +36,12 @@ com_crashlytics_export_strings.xml
 
 # the target folder
 target/
+
+# Eclipse
+.settings
+.classpath
+.project
+.DS_Store
+project/project
+.cache-main
+/bin/
