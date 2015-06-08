@@ -44,4 +44,5 @@ target/
 .DS_Store
 project/project
 .cache-main
+.cache-tests
 /bin/
