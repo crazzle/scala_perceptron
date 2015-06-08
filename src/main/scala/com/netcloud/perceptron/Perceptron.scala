@@ -17,11 +17,18 @@ import scala.languageFeature.postfixOps
 class Perceptron {
 
   /**
-   * These should be observables to be multi-layered
-   * we need streams of information flowing through the net
+   * Edges a perceptron receives activation values from
    */
-  //val inputEdges: List[Edge] = List[Edge](Edge(Future {1}, -1.5), Edge(Future {0}, 1), Edge(Future {1}, 1))
+  var inputEdges: List[InputEdge] = List[InputEdge]()
+  
+  /**
+   * Edges a perceptron broadcasts its activation value to
+   */
+  var outputEdges: List[OutputEdge] = List[OutputEdge]()
 
+  /**
+   * The activation function
+   */
   def activate() : Future[Double] = {
     val result = Promise[Double]()
     //val inputs = Future sequence inputEdges.map(_.value)

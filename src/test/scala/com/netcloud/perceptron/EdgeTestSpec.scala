@@ -9,7 +9,7 @@ class EdgeTestSpec extends WordSpec{
   "An edge" when {
     "activation pushed" should {
       "should push to function" in {
-        val edge = new Edge()
+        val edge = new WiringEdge()
         edge.listen { act => assert(act == 1) }
         edge.push(1)
       }
