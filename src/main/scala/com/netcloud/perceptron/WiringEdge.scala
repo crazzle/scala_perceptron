@@ -4,11 +4,12 @@ import rx.lang.scala.Observable
 import rx.lang.scala.Observer
 import rx.lang.scala.Subject
 
+
 /**
  * Abstraction for an edge, that contains a weight
  */
 trait Edge{
-  var weight : Double
+  val weight : Double
 }
 
 /**
@@ -29,23 +30,12 @@ trait OutputEdge extends Edge{
  * An edge wires @{Perceptron}s up
  * It contains a channel
  */
-class WiringEdge extends InputEdge with OutputEdge{
-  
-  /**
-   * The weight, has to be mutable concerning backtracking
-   */
-  var weight = 1.0
-  
-  /**
-   * The channel used to move information from one perceptron to another
-   */
-  private[this] val channel : Subject[(Double, Double)] = Subject[(Double, Double)]()
-  
+class WiringEdge private (val weight : Double, val channel : Subject[(Double, Double)]) extends InputEdge with OutputEdge{
   /**
    * Pushing the activation value from one perceptron to another
    */
   def push(activation : Double){
-    channel.onNext(activation, weight)
+     channel.onNext(activation, weight)
   }
   
   /**
@@ -54,4 +44,8 @@ class WiringEdge extends InputEdge with OutputEdge{
   def listen(f : ((Double, Double)) => Unit){
     channel.subscribe(f)
   }
+}
+object WiringEdge{
+	def apply(weight : Double): WiringEdge = new WiringEdge(weight, Subject[(Double, Double)]())
+  def apply(): WiringEdge = new WiringEdge(0, Subject[(Double, Double)]())
 }
