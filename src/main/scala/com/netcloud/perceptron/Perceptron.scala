@@ -8,26 +8,30 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.languageFeature.postfixOps
 
-case class Edge(value: Future[Double], weight: Double)
-
+/**
+ * A @{Perceptron} is the core component of a neural net.
+ * It consists of multiple inputchannel and multiple outputchannel.
+ * As soon as all inputs are defined it calculates the output value
+ * and broadcasts it to all outputchannel.
+ */
 class Perceptron {
 
   /**
    * These should be observables to be multi-layered
    * we need streams of information flowing through the net
    */
-  val inputEdges: List[Edge] = List[Edge](Edge(Future {1}, -1.5), Edge(Future {0}, 1), Edge(Future {1}, 1))
+  //val inputEdges: List[Edge] = List[Edge](Edge(Future {1}, -1.5), Edge(Future {0}, 1), Edge(Future {1}, 1))
 
   def activate() : Future[Double] = {
     val result = Promise[Double]()
-    val inputs = Future sequence inputEdges.map(_.value)
-    inputs.onComplete {
+    //val inputs = Future sequence inputEdges.map(_.value)
+    /*inputs.onComplete {
       case Success(results) =>
         val sig = Perceptron.sigmoid(inputEdges.map(e => e.weight * e.value.value.get.get).sum)
         result.complete(Try(sig))
       case Failure(ex) =>
         result.failure(ex)
-    }
+    }*/
     result.future
   }
 
