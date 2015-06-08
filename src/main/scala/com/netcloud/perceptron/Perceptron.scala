@@ -105,8 +105,19 @@ object Perceptron {
      */
     val p = new Perceptron(ins, outs)
     p.init()
+    
+    /**
+     * Push a TRUE through the edges
+     */
     statEdge.push(1)
     edge1.push(1)
+    edge2.push(1)
+    
+    /**
+     * Push a FALSE through the edges
+     */
+    statEdge.push(1)
+    edge1.push(0)
     edge2.push(1)
 
     /**
