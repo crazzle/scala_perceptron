@@ -1,7 +1,6 @@
 package com.netcloud.perceptron
 
 import java.util.concurrent.TimeUnit
-
 import scala.concurrent.{Await, Promise, Future}
 import scala.util.{Failure, Try, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,58 +13,105 @@ import scala.languageFeature.postfixOps
  * As soon as all inputs are defined it calculates the output value
  * and broadcasts it to all outputchannel.
  */
-class Perceptron {
+class Perceptron(val ins : List[InputEdge], val outs : List[OutputEdge]) {
 
   /**
    * Edges a perceptron receives activation values from
    */
-  var inputEdges: List[InputEdge] = List[InputEdge]()
+  private[this] val inputEdges: List[InputEdge] = ins
   
   /**
    * Edges a perceptron broadcasts its activation value to
    */
-  var outputEdges: List[OutputEdge] = List[OutputEdge]()
-
+  private[this] val outputEdges: List[OutputEdge] = outs
+  
+  /**
+   * Activations with weight stored per input edge
+   */
+  private[this] type ActivationWithWeight = (Double, Double)
+  private[this] var activations = Vector[ActivationWithWeight]()
+  
+  /**
+   * Initializes the perceptron by applying the right
+   * function to all input edges
+   */
+  def init() : Unit = {
+    inputEdges.foreach { in => in.listen(listen) }
+  }
+  
+  /**
+   * Listens for new activations and if all ready activates
+   * the perceptron
+   */
+  private[this] def listen : ((Double,Double)) => Unit = { activationWithWeight =>
+    synchronized {
+      activations = activations :+ activationWithWeight
+      if(activations.size == inputEdges.size){
+        activate
+        activations = Vector[ActivationWithWeight]()
+      }
+    }
+  }
+  
   /**
    * The activation function
    */
-  def activate() : Future[Double] = {
-    val result = Promise[Double]()
-    //val inputs = Future sequence inputEdges.map(_.value)
-    /*inputs.onComplete {
-      case Success(results) =>
-        val sig = Perceptron.sigmoid(inputEdges.map(e => e.weight * e.value.value.get.get).sum)
-        result.complete(Try(sig))
-      case Failure(ex) =>
-        result.failure(ex)
-    }*/
-    result.future
+  private[this] def activate() : Unit = {
+    val act = Perceptron.sigmoid(activations.map(_ match {
+      case (activation, weight) => activation * weight
+      case _ => throw new IllegalArgumentException("That was not an ActivationWithWeight")
+    }).sum)
+    broadcast(act)
   }
 
-  /** Continues the computation of this future by taking the current future
-    *  and mapping it into another future.
-    *
-    *  The function `cont` is called only after the current future completes.
-    *  The resulting future contains a value returned by `cont`.
-    */
-  def continueWith[T, S](base: Future[T], cont: Future[T] => S): Future[S] = {
-    val p = Promise[S]()
-    base.onComplete{
-      case _ => p.complete(Try(cont(base)))
-    }
-    p.future
+  /**
+   * Broadcasts an activation to all outputs
+   */
+  private[this] def broadcast(activation: Double) = {
+    outputEdges.foreach { out => out.push(activation) }
   }
 }
 
 object Perceptron {
+  
   def sigmoid(value: Double): Double = {
     1 / (1 + Math.exp(-1 * value))
   }
 
   def main(args: Array[String]) {
-    val p = new Perceptron()
-    val f = p.activate()
-    Await.result(f, Duration(3, TimeUnit.SECONDS))
-    println(f.value.get.get)
+    /**
+     * Set up the edges
+     */
+    val statEdge = new WiringEdge()
+    statEdge.weight = -1.5
+    val edge1 = new WiringEdge()
+    edge1.weight = 1
+    val edge2 = new WiringEdge()
+    edge2.weight = 1
+    val ins = List[InputEdge](statEdge, edge1, edge2)
+    
+    /**
+     * Set up output edge
+     */
+    val out = new WiringEdge()
+    out.listen {tuple => tuple match {
+        case (activation, weight) => println("Is a logic AND: " + (activation>0.5))
+      }
+    }
+    val outs = List[OutputEdge](out)
+    
+    /**
+     * Wire up perceptrons
+     */
+    val p = new Perceptron(ins, outs)
+    p.init()
+    statEdge.push(1)
+    edge1.push(1)
+    edge2.push(1)
+
+    /**
+     * Wait for output before finishing
+     */
+    Thread.sleep(1000)
   }
 }

@@ -15,7 +15,7 @@ trait Edge{
  * Abstraction for edges acting as an input to a perceptron
  */
 trait InputEdge extends Edge{
-  def listen(f : Double => Unit)
+  def listen(f : ((Double,Double)) => Unit)
 }
 
 /**
@@ -39,19 +39,19 @@ class WiringEdge extends InputEdge with OutputEdge{
   /**
    * The channel used to move information from one perceptron to another
    */
-  private[this] val channel : Subject[Double] = Subject[Double]()
+  private[this] val channel : Subject[(Double, Double)] = Subject[(Double, Double)]()
   
   /**
    * Pushing the activation value from one perceptron to another
    */
   def push(activation : Double){
-    channel.onNext(activation)
+    channel.onNext(activation, weight)
   }
   
   /**
    * Listen to the channel to receive new activation values from a perceptron
    */
-  def listen(f : Double => Unit){
+  def listen(f : ((Double, Double)) => Unit){
     channel.subscribe(f)
   }
 }
