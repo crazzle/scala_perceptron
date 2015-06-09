@@ -66,6 +66,11 @@ class PerceptronTestSpec extends WordSpec {
         edge12.push(1)
         edge21.push(0)
         edge22.push(0)
+        
+        edge11.push(0)
+        edge12.push(0)
+        edge21.push(1)
+        edge22.push(1)
       }
     }
   }
@@ -85,6 +90,11 @@ class PerceptronTestSpec extends WordSpec {
         edge12.push(1)
         edge21.push(1)
         edge22.push(1)
+        
+        edge11.push(0)
+        edge12.push(0)
+        edge21.push(0)
+        edge22.push(0)
       }
     }
   }
