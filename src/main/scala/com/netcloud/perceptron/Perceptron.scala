@@ -5,6 +5,7 @@ import scala.concurrent.{ Await, Promise, Future }
 import scala.languageFeature.postfixOps
 import scala.async.Async.{ async, await }
 import scala.concurrent.ExecutionContext.Implicits.global
+import rx.lang.scala.Observable
 
 /**
  * A @{Perceptron} is the core component of a neural net.
@@ -25,48 +26,26 @@ class Perceptron private (val ins: List[InputEdge], val outs: List[OutputEdge]) 
   private[this] val outputEdges: List[OutputEdge] = outs
 
   /**
-   * Activations with weight stored per input edge
-   */
-  private[this]type ActivationWithWeight = (Double, Double)
-  private[this] var activations = Vector[ActivationWithWeight]() // TODO: Get rid of it!!!!
-
-  /**
    * Initializes the perceptron by applying the right
    * function to all input edges
    */
   def init(): Unit = {
-    /**
-     * TODO: Implement a merge in @{WiringEdge} to get rid of the 
-     * activations and thus of the synchronized block in listen.
-     */
-    inputEdges.foreach { in => in.listen(listen) }
-  }
-
-  /**
-   * Listens for new activations and if all ready activates
-   * the perceptron
-   */
-  private[this] def listen: ((Double, Double)) => Unit = { activationWithWeight =>
-    async {
-      synchronized {
-        activations = activations :+ activationWithWeight
-        if (activations.size == inputEdges.size) {
-          activate()
-          activations = Vector[ActivationWithWeight]()
-        }
-      }
-    }
+    val zero = Observable[(Double, Double)] { x => }
+    val bigStream = inputEdges.map(x => x.channel).foldLeft(zero)((el, acc) => acc.merge(el))
+    bigStream
+      .take(ins.size)
+      .scan(0.0)((acc, el) => acc + (el._1 * el._2))
+      .subscribe(v => activate(v))
   }
 
   /**
    * The activation function
    */
-  private[this] def activate(): Unit = {
-    val act = Perceptron.sigmoid(activations.map(_ match {
-      case (activation, weight) => activation * weight
-      case _                    => throw new IllegalArgumentException("That was not an ActivationWithWeight")
-    }).sum)
-    broadcast(act)
+  private[this] def activate(value: Double): Unit = {
+    async {
+      val act = Perceptron.sigmoid(value)
+      broadcast(act)
+    }
   }
 
   /**

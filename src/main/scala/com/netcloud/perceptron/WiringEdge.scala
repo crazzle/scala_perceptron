@@ -9,6 +9,7 @@ import rx.lang.scala.Subject
  * Abstraction for an edge, that contains a weight
  */
 trait Edge{
+  val channel : Subject[(Double, Double)]
   val weight : Double
 }
 
@@ -17,6 +18,7 @@ trait Edge{
  */
 trait InputEdge extends Edge{
   def listen(f : ((Double,Double)) => Unit)
+  def merge(that: Observable[(Double, Double)]) : Observable[(Double, Double)]
 }
 
 /**
@@ -43,6 +45,10 @@ class WiringEdge private (val weight : Double, val channel : Subject[(Double, Do
    */
   def listen(f : ((Double, Double)) => Unit){
     channel.subscribe(f)
+  }
+  
+  def merge(that: Observable[(Double, Double)]) : Observable[(Double, Double)] = {
+    this.channel.merge(that)
   }
 }
 object WiringEdge{
