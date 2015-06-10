@@ -13,7 +13,7 @@ import rx.lang.scala.Observable
  * As soon as all inputs are defined it calculates the output value
  * and broadcasts it to all outputchannel.
  */
-class Perceptron private (val ins: List[InputEdge], val outs: List[OutputEdge]) {
+class Perceptron private (val name : String, val ins: List[InputEdge], val outs: List[OutputEdge], val sig: Boolean) {
 
   /**
    * Edges a perceptron receives activation values from
@@ -31,19 +31,21 @@ class Perceptron private (val ins: List[InputEdge], val outs: List[OutputEdge]) 
    */
   def init(): Unit = {
     val zero = Observable[(Double, Double)] { x => }
-    val bigStream = inputEdges.map(x => x.channel).foldLeft(zero)((el, acc) => acc.merge(el))
+    val bigStream = inputEdges
+      .map(x => x.channel)
+      .foldLeft(zero)((el, acc) => acc.merge(el))
     bigStream
-      .take(ins.size)
-      .scan(0.0)((acc, el) => acc + (el._1 * el._2))
-      .subscribe(v => activate(v))
+      .scan((0, Seq[(Double, Double)]()))((acc, el) => (acc._1 + 1, acc._2 ++ Seq[(Double, Double)]((el._1,el._2))))
+      .subscribe(v => if (v._1 == ins.size) activate(v._2))
   }
 
   /**
    * The activation function
    */
-  private[this] def activate(value: Double): Unit = {
+  private[this] def activate(values: Seq[(Double, Double)]): Unit = {
     async {
-      val act = Perceptron.sigmoid(value)
+      val value = values.foldLeft(0.0)((acc, el) => acc + (el._1 * el._2))
+      val act = if (sig) {Perceptron.sigmoid(value)} else value
       broadcast(act)
     }
   }
@@ -57,8 +59,8 @@ class Perceptron private (val ins: List[InputEdge], val outs: List[OutputEdge]) 
 }
 
 object Perceptron {
-  def apply(ins: List[InputEdge], outs: List[OutputEdge]): Perceptron = {
-    val perceptron = new Perceptron(ins, outs)
+  def apply(name : String, ins: List[InputEdge], outs: List[OutputEdge], sig : Boolean = false): Perceptron = {
+    val perceptron = new Perceptron(name, ins, outs, sig)
     perceptron.init()
     perceptron
   }
