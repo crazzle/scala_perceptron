@@ -6,6 +6,7 @@ import scala.languageFeature.postfixOps
 import scala.async.Async.{ async, await }
 import scala.concurrent.ExecutionContext.Implicits.global
 import rx.lang.scala.Observable
+import scala.collection.immutable.Queue
 
 /**
  * A @{Perceptron} is the core component of a neural net.
@@ -30,13 +31,18 @@ class Perceptron private (val name : String, val ins: List[InputEdge], val outs:
    * function to all input edges
    */
   def init(): Unit = {
-    val zero = Observable[(Double, Double)] { x => }
-    val bigStream = inputEdges
+    val typedEmpty = Observable[(Double, Double)] { x => }
+    inputEdges
       .map(x => x.channel)
-      .foldLeft(zero)((el, acc) => acc.merge(el))
-    bigStream
-      .scan((0, Seq[(Double, Double)]()))((acc, el) => (acc._1 + 1, acc._2 ++ Seq[(Double, Double)]((el._1,el._2))))
-      .subscribe(v => if (v._1 == ins.size) activate(v._2))
+      .foldLeft(typedEmpty)((el, acc) => acc.merge(el))
+      .scan((0l, Queue.empty[(Double, Double)])){
+        (acc, el) => {
+          (acc._1 + 1, acc._2 ++ Seq[(Double, Double)]((el._1,el._2)))
+        }
+      }
+      .subscribe{v => 
+        if (v._1 > 0 && v._1 % ins.size == 0) activate(v._2.takeRight(ins.size))
+      }
   }
 
   /**
