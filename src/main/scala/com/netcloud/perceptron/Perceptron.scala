@@ -14,7 +14,10 @@ import scala.collection.immutable.Queue
  * As soon as all inputs are defined it calculates the output value
  * and broadcasts it to all outputchannel.
  */
-class Perceptron private (val name : String, val ins: List[InputEdge], val outs: List[OutputEdge], val sig: Boolean) {
+class Perceptron private (val name: String, 
+    val ins: List[InputEdge], 
+    val outs: List[OutputEdge], 
+    val sig: Boolean) {
 
   /**
    * Edges a perceptron receives activation values from
@@ -35,13 +38,15 @@ class Perceptron private (val name : String, val ins: List[InputEdge], val outs:
     inputEdges
       .map(x => x.channel)
       .foldLeft(typedEmpty)((el, acc) => acc.merge(el))
-      .scan((0l, Queue.empty[(Double, Double)])){
-        (acc, el) => {
-          (acc._1 + 1, acc._2 ++ Seq[(Double, Double)]((el._1,el._2)))
+      .scan((0l, Queue.empty[(Double, Double)]))((acc, el) => 
+        (acc, el) match {
+          case ((count, activations), activation) => (count + 1, activations :+ activation)
+      })
+      .subscribe { tuple =>
+        val (count, activations) = tuple
+        if(count > 0 && count % ins.size == 0){
+          activate(activations.takeRight(ins.size))
         }
-      }
-      .subscribe{v => 
-        if (v._1 > 0 && v._1 % ins.size == 0) activate(v._2.takeRight(ins.size))
       }
   }
 
@@ -51,7 +56,7 @@ class Perceptron private (val name : String, val ins: List[InputEdge], val outs:
   private[this] def activate(values: Seq[(Double, Double)]): Unit = {
     async {
       val value = values.foldLeft(0.0)((acc, el) => acc + (el._1 * el._2))
-      val act = if (sig) {Perceptron.sigmoid(value)} else value
+      val act = if (sig) { Perceptron.sigmoid(value) } else value
       broadcast(act)
     }
   }
@@ -65,7 +70,7 @@ class Perceptron private (val name : String, val ins: List[InputEdge], val outs:
 }
 
 object Perceptron {
-  def apply(name : String, ins: List[InputEdge], outs: List[OutputEdge], sig : Boolean = false): Perceptron = {
+  def apply(name: String, ins: List[InputEdge], outs: List[OutputEdge], sig: Boolean = false): Perceptron = {
     val perceptron = new Perceptron(name, ins, outs, sig)
     perceptron.init()
     perceptron
