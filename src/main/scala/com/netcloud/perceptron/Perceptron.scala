@@ -50,7 +50,7 @@ class Perceptron private (val name: String,
         })
       .subscribe { activations =>
         if (activations.size == ins.size) {
-          activate(activations.takeRight(ins.size))
+          activate(activations)
         }
       }
   }
