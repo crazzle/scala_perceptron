@@ -32,7 +32,10 @@ trait OutputEdge extends Edge{
  * An edge wires @{Perceptron}s up
  * It contains a channel
  */
-class WiringEdge private (val weight : Double, val channel : Subject[(Double, Double)]) extends InputEdge with OutputEdge{
+class WiringEdge private (
+    val weight : Double, 
+    val channel : Subject[(Double, Double)]) extends InputEdge with OutputEdge{
+  
   /**
    * Pushing the activation value from one perceptron to another
    */

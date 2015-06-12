@@ -17,7 +17,7 @@ import scala.collection.immutable.Queue
 class Perceptron private (val name: String,
                           val ins: List[InputEdge],
                           val outs: List[OutputEdge],
-                          val sig: Boolean) {
+                          val sig: (Double) => Double) {
 
   /**
    * Edges a perceptron receives activation values from
@@ -33,7 +33,7 @@ class Perceptron private (val name: String,
    * Initializes the perceptron by applying the right
    * function to all input edges
    */
-  def init(): Unit = {
+  private def init(): Unit = {
     val typedEmpty = Observable[(Double, Double)] { x => }
     inputEdges
       .map(x => x.channel)
@@ -61,7 +61,7 @@ class Perceptron private (val name: String,
   private[this] def activate(values: Seq[(Double, Double)]): Unit = {
     async {
       val value = values.foldLeft(0.0)((acc, el) => acc + (el._1 * el._2))
-      val act = if (sig) { Perceptron.sigmoid(value) } else value
+      val act = sig(value)
       broadcast(act)
     }
   }
@@ -75,13 +75,16 @@ class Perceptron private (val name: String,
 }
 
 object Perceptron {
-  def apply(name: String, ins: List[InputEdge], outs: List[OutputEdge], sig: Boolean = false): Perceptron = {
+  def apply(name: String, 
+      ins: List[InputEdge], 
+      outs: List[OutputEdge], 
+      sig: (Double) => Double = sigmoid): Perceptron = {
     val perceptron = new Perceptron(name, ins, outs, sig)
     perceptron.init()
     perceptron
   }
 
-  def sigmoid(value: Double): Double = {
+  private def sigmoid(value: Double): Double = {
     1 / (1 + Math.exp(-1 * value))
   }
 }
