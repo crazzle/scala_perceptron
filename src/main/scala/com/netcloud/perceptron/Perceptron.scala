@@ -17,7 +17,7 @@ import scala.collection.immutable.Queue
 class Perceptron private (val name: String,
                           val ins: List[InputEdge],
                           val outs: List[OutputEdge],
-                          val sig: (Double) => Double) {
+                          val f: (Double) => Double) {
 
   /**
    * Edges a perceptron receives activation values from
@@ -61,7 +61,7 @@ class Perceptron private (val name: String,
   private[this] def activate(values: Seq[(Double, Double)]): Unit = {
     async {
       val value = values.foldLeft(0.0)((acc, el) => acc + (el._1 * el._2))
-      val act = sig(value)
+      val act = f(value)
       broadcast(act)
     }
   }
@@ -78,13 +78,13 @@ object Perceptron {
   def apply(name: String, 
       ins: List[InputEdge], 
       outs: List[OutputEdge], 
-      sig: (Double) => Double = sigmoid): Perceptron = {
-    val perceptron = new Perceptron(name, ins, outs, sig)
+      f: (Double) => Double = sigmoid): Perceptron = {
+    val perceptron = new Perceptron(name, ins, outs, f)
     perceptron.init()
     perceptron
   }
 
-  private def sigmoid(value: Double): Double = {
+  def sigmoid(value: Double): Double = {
     1 / (1 + Math.exp(-1 * value))
   }
 }

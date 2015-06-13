@@ -30,9 +30,10 @@ trait OutputEdge extends Edge{
 
 /**
  * An edge wires @{Perceptron}s up
- * It contains a channel
+ * It contains a channel and a weight
+ * <<- It is a case class to use the copy function ->>
  */
-class WiringEdge private (
+case class WiringEdge private (
     val weight : Double, 
     val channel : Subject[(Double, Double)]) extends InputEdge with OutputEdge{
   
