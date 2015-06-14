@@ -1,9 +1,7 @@
 package com.netcloud.perceptron
 
-import java.util.concurrent.TimeUnit
-import scala.concurrent.{ Await, Promise, Future }
 import scala.languageFeature.postfixOps
-import scala.async.Async.{ async, await }
+import scala.async.Async.async
 import scala.concurrent.ExecutionContext.Implicits.global
 import rx.lang.scala.Observable
 import scala.collection.immutable.Queue
@@ -40,13 +38,12 @@ class Perceptron private (val name: String,
       .foldLeft(typedEmpty)((el, acc) => acc.merge(el))
       .scan(Queue.empty[(Double, Double)])((acc, el) =>
         (acc, el) match {
-          case (list, activation) => {
+          case (list, activation) =>
             if (list.size < ins.size) {
               list :+ activation
             } else {
               Queue.empty[(Double, Double)] :+ activation
             }
-          }
         })
       .subscribe { activations =>
         if (activations.size == ins.size) {

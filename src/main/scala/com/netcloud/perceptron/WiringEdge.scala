@@ -1,7 +1,6 @@
 package com.netcloud.perceptron
 
 import rx.lang.scala.Observable
-import rx.lang.scala.Observer
 import rx.lang.scala.Subject
 
 
@@ -33,9 +32,7 @@ trait OutputEdge extends Edge{
  * It contains a channel and a weight
  * <<- It is a case class to use the copy function ->>
  */
-case class WiringEdge private (
-    val weight : Double, 
-    val channel : Subject[(Double, Double)]) extends InputEdge with OutputEdge{
+case class WiringEdge private (weight : Double, channel : Subject[(Double, Double)]) extends InputEdge with OutputEdge{
   
   /**
    * Pushing the activation value from one perceptron to another
