@@ -13,19 +13,9 @@ import scala.collection.immutable.Queue
  * and broadcasts it to all outputchannel.
  */
 class Perceptron private (val name: String,
-                          val ins: List[InputEdge],
-                          val outs: List[OutputEdge],
+                          val inputEdges: List[InputEdge],
+                          val outputEdges: List[OutputEdge],
                           val f: (Double) => Double) {
-
-  /**
-   * Edges a perceptron receives activation values from
-   */
-  private[this] val inputEdges: List[InputEdge] = ins
-
-  /**
-   * Edges a perceptron broadcasts its activation value to
-   */
-  private[this] val outputEdges: List[OutputEdge] = outs
 
   /**
    * Initializes the perceptron by applying the right
@@ -39,14 +29,14 @@ class Perceptron private (val name: String,
       .scan(Queue.empty[(Double, Double)])((acc, el) =>
         (acc, el) match {
           case (list, activation) =>
-            if (list.size < ins.size) {
+            if (list.size < inputEdges.size) {
               list :+ activation
             } else {
               Queue.empty[(Double, Double)] :+ activation
             }
         })
       .subscribe { activations =>
-        if (activations.size == ins.size) {
+        if (activations.size == inputEdges.size) {
           activate(activations)
         }
       }
