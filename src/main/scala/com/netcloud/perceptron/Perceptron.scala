@@ -36,8 +36,10 @@ class Perceptron private (val name: String,
             }
         })
       .subscribe { activations =>
-        if (activations.size == inputEdges.size) {
-          activate(activations)
+        async {
+          if (activations.size == inputEdges.size) {
+            activate(activations)
+          }
         }
       }
   }
@@ -46,11 +48,9 @@ class Perceptron private (val name: String,
    * The activation function
    */
   private[this] def activate(values: Seq[(Double, Double)]): Unit = {
-    async {
-      val value = values.foldLeft(0.0)((acc, el) => acc + (el._1 * el._2))
-      val act = f(value)
-      broadcast(act)
-    }
+    val value = values.foldLeft(0.0)((acc, el) => acc + (el._1 * el._2))
+    val act = f(value)
+    broadcast(act)
   }
 
   /**
@@ -62,10 +62,10 @@ class Perceptron private (val name: String,
 }
 
 object Perceptron {
-  def apply(name: String, 
-      ins: List[InputEdge], 
-      outs: List[OutputEdge], 
-      f: (Double) => Double = sigmoid): Perceptron = {
+  def apply(name: String,
+            ins: List[InputEdge],
+            outs: List[OutputEdge],
+            f: (Double) => Double = sigmoid): Perceptron = {
     val perceptron = new Perceptron(name, ins, outs, f)
     perceptron.init()
     perceptron
