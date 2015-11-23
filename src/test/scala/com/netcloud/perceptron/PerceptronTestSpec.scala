@@ -16,8 +16,7 @@ class PerceptronTestSpec extends WordSpec {
         out.listen {
           case (activation, weight) => res = activation >= 0.5
         }
-        val outs = List[OutputEdge](out)
-        Perceptron("p", ins, outs)
+        Perceptron("p", ins, out)
 
         statEdge.push(1)
         edge1.push(1)
@@ -41,9 +40,8 @@ class PerceptronTestSpec extends WordSpec {
         out.listen {
           case (activation, weight) => res = activation < 0.5
         }
-        val outs = List[OutputEdge](out)
 
-        Perceptron("p", ins, outs)
+        Perceptron("p", ins, out)
 
         statEdge.push(1)
         edge1.push(1)
@@ -163,8 +161,7 @@ class PerceptronTestSpec extends WordSpec {
     out1.listen {
       case (activation, weight) => edgeLast1.push(if (activation > 0) 1 else 0)
     }
-    val outs1 = List[OutputEdge](out1)
-    Perceptron("p1", a, outs1, (d: Double) => d)
+    Perceptron("p1", a, out1, (d: Double) => d)
 
     // Second Perceptron
     val b = List[InputEdge](edgeB2, edgeA2, statEdge2)
@@ -172,16 +169,14 @@ class PerceptronTestSpec extends WordSpec {
     out2.listen {
       case (activation, weight) => edgeLast2.push(if (activation > 0) 1 else 0)
     }
-    val outs2 = List[OutputEdge](out2)
-    Perceptron("p2", b, outs2, (d: Double) => d)
+    Perceptron("p2", b, out2, (d: Double) => d)
 
     /**
      * Last Layer (output layer)
      */
     val insLast = List[InputEdge](edgeLast1, edgeLast2, statEdgeLast)
     val outLast = WiringEdge()
-    val outsLast = List[OutputEdge](outLast)
-    Perceptron("pLast", insLast, outsLast, (d: Double) => d)
+    Perceptron("pLast", insLast, outLast, (d: Double) => d)
 
     (edgeA1, edgeA2, edgeB1, edgeB2, statEdge1, statEdge2, statEdgeLast, outLast)
   }

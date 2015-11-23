@@ -14,7 +14,7 @@ import scala.collection.immutable.Queue
  */
 class Perceptron private (val name: String,
                           val inputEdges: List[InputEdge],
-                          val outputEdges: List[OutputEdge],
+                          val outputEdge: OutputEdge,
                           val f: (Double) => Double) {
 
   /**
@@ -57,14 +57,14 @@ class Perceptron private (val name: String,
    * Broadcasts an activation to all outputs
    */
   private[this] def broadcast(activation: Double) = {
-    outputEdges.foreach { out => out.push(activation) }
+    outputEdge.push(activation)
   }
 }
 
 object Perceptron {
   def apply(name: String, 
       ins: List[InputEdge], 
-      outs: List[OutputEdge], 
+      outs: OutputEdge,
       f: (Double) => Double = sigmoid): Perceptron = {
     val perceptron = new Perceptron(name, ins, outs, f)
     perceptron.init()
