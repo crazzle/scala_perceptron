@@ -1,5 +1,6 @@
 package com.netcloud.perceptron
 
+import com.netcloud.perceptron.Perceptron.Activatable
 import scala.languageFeature.postfixOps
 import scala.async.Async.async
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -12,10 +13,15 @@ import scala.collection.immutable.Queue
  * As soon as all inputs are defined it calculates the output value
  * and broadcasts it to all outputchannel.
  */
-class Perceptron private (val name: String,
-                          val inputEdges: List[InputEdge],
-                          val outputEdge: OutputEdge,
-                          val f: (Double) => Double) {
+case class Perceptron(val name: String,
+                      val inputEdges: List[InputEdge],
+                      val outputEdge: OutputEdge,
+                      val f: (Double) => Double = Perceptron.sigmoid) extends Activatable {
+
+  /**
+    * Run at instantiation to initialize the perceptrons input-stream
+    */
+  init()
 
   /**
    * Initializes the perceptron by applying the right
@@ -47,31 +53,26 @@ class Perceptron private (val name: String,
   /**
    * The activation function
    */
-  private[this] def activate(values: Seq[(Double, Double)]): Unit = {
+  override def activate(values: Seq[(Double, Double)]): Double = {
     val value = values.foldLeft(0.0)((acc, el) => acc + (el._1 * el._2))
-    val act = f(value)
-    broadcast(act)
+    val activation = f(value)
+    outputEdge.push(activation)
+    activation
+  }
+}
+object Perceptron {
+  /**
+    * Sigmoid function that is used during the activation
+    */
+  def sigmoid(value: Double): Double = {
+    1 / (1 + Math.exp(-1 * value))
   }
 
   /**
-   * Broadcasts an activation to all outputs
-   */
-  private[this] def broadcast(activation: Double) = {
-    outputEdge.push(activation)
-  }
-}
-
-object Perceptron {
-  def apply(name: String,
-            ins: List[InputEdge],
-            out: OutputEdge,
-            f: (Double) => Double = sigmoid): Perceptron = {
-    val perceptron = new Perceptron(name, ins, out, f)
-    perceptron.init()
-    perceptron
-  }
-
-  def sigmoid(value: Double): Double = {
-    1 / (1 + Math.exp(-1 * value))
+    * A perceptron is an Activatable. That means it can be activated if it has
+    * enough values pushed over the edges
+    */
+  trait Activatable {
+    def activate(values: Seq[(Double, Double)]): Double = ???
   }
 }
