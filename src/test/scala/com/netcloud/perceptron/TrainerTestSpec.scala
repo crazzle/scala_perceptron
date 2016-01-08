@@ -14,7 +14,7 @@ class TrainerTestSpec extends WordSpec {
   implicit val timeout = Timeout(5 seconds)
 
   "A trainer" when {
-    "should be stackable" should {
+    "be stackable" should {
       "should store the current value" in {
         val statEdge = WiringEdge(-1.5)
         val edge1 = WiringEdge(1)

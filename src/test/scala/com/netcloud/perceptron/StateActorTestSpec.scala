@@ -27,8 +27,6 @@ class StateActorTestSpec extends WordSpec {
         val f2 = ref ? GetState
         val state2 = Await.result(f2, timeout.duration).asInstanceOf[State]
         assert(state2.currentActivation.equals(10.0))
-
-        GlobalContext.globalActorSystem.terminate()
       }
     }
   }
