@@ -25,6 +25,11 @@ trait Trainer extends Activatable {
   val keeper = globalActorSystem.actorOf(Props[StateActor])
 
   /**
+    * Backpropagation edge
+    */
+  val backpropagation = ??? //Bind the inputchannels to the backpropagation edge in order to adapt the error
+
+  /**
     * Stacked activation function
     */
   abstract override def activate(values: Seq[(Double, Double)]): Double = {

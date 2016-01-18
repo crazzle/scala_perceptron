@@ -16,7 +16,6 @@ trait Edge{
  */
 trait InputEdge extends Edge{
   def listen(f : ((Double,Double)) => Unit)
-  def merge(that: Observable[(Double, Double)]) : Observable[(Double, Double)]
 }
 
 /**
@@ -45,13 +44,6 @@ case class WiringEdge private (weight : Double, channel : Subject[(Double, Doubl
    */
   def listen(f : ((Double, Double)) => Unit){
     channel.subscribe(f)
-  }
-
-  /**
-   * Merges the channel of the edge with another channel
-   */
-  def merge(that: Observable[(Double, Double)]) : Observable[(Double, Double)] = {
-    this.channel.merge(that)
   }
 }
 object WiringEdge{

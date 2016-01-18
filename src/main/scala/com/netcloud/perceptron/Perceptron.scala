@@ -13,10 +13,10 @@ import scala.collection.immutable.Queue
  * As soon as all inputs are defined it calculates the output value
  * and broadcasts it to all outputchannel.
  */
-case class Perceptron(val name: String,
-                      val inputEdges: List[InputEdge],
-                      val outputEdge: OutputEdge,
-                      val f: (Double) => Double = Perceptron.sigmoid) extends Activatable {
+case class Perceptron(name: String,
+                      inputEdges: List[InputEdge],
+                      outputEdge: OutputEdge,
+                      f: (Double) => Double = Perceptron.sigmoid) extends Activatable {
 
   /**
     * Run at instantiation to initialize the perceptrons input-stream
@@ -59,6 +59,11 @@ case class Perceptron(val name: String,
     outputEdge.push(activation)
     activation
   }
+
+  /**
+    * provide the channels
+    */
+  override def channels = inputEdges
 }
 object Perceptron {
   /**
@@ -73,6 +78,7 @@ object Perceptron {
     * enough values pushed over the edges
     */
   trait Activatable {
-    def activate(values: Seq[(Double, Double)]): Double = ???
+    def activate(values: Seq[(Double, Double)]): Double
+    def channels : List[InputEdge]
   }
 }
