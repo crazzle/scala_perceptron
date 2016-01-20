@@ -1,6 +1,5 @@
 package com.netcloud.perceptron
 
-import rx.lang.scala.Observable
 import rx.lang.scala.Subject
 
 /**
