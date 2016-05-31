@@ -6,7 +6,8 @@ import com.netcloud.GlobalContext
 import com.netcloud.perceptron.Perceptron.Activatable
 import GlobalContext.globalActorSystem
 import akka.pattern.ask
-import com.netcloud.training.StateActor.{NewActivation, GetState}
+import com.netcloud.training.StateActor.{GetState, NewActivation, State}
+
 import scala.concurrent.duration._
 
 /**
@@ -27,7 +28,7 @@ trait Trainer extends Activatable {
   /**
     * Backpropagation edge
     */
-  val backpropagation = ??? //Bind the inputchannels to the backpropagation edge in order to adapt the error
+  def backpropagate(result : Double, error : State) = ??? //Bind the inputchannels to the backpropagation edge in order to adapt the error
 
   /**
     * Stacked activation function

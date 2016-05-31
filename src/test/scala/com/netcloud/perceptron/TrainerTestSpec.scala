@@ -53,7 +53,9 @@ class TrainerTestSpec extends WordSpec {
         Thread.sleep(1000)
         val result = Await.result(p.getState(), timeout.duration).asInstanceOf[State]
         val error = 0.5
-        p.backpropagate(result, error)
+        intercept[NotImplementedError] {
+          p.backpropagate(error, result)
+        }
       }
     }
   }
