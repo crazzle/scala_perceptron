@@ -28,7 +28,9 @@ trait Trainer extends Activatable {
   /**
     * Backpropagation edge
     */
-  def backpropagate(result : Double, error : State) = ??? //Bind the inputchannels to the backpropagation edge in order to adapt the error
+  def backpropagate(error : Double, state : State) = {
+    channels.foreach(inputedge => inputedge.backfeed(state.activation - error))
+  } //Bind the inputchannels to the backpropagation edge in order to adapt the error
 
   /**
     * Stacked activation function

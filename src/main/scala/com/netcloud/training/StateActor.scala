@@ -41,5 +41,5 @@ object StateActor{
   /**
     * Current state of the perceptron that gets sent as an answer
     */
-  case class State(currentActivation : Double)
+  case class State(activation : Double)
 }

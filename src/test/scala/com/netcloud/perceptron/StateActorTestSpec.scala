@@ -21,12 +21,12 @@ class StateActorTestSpec extends WordSpec {
         ref ! NewActivation(25.0)
         val f = ref ? GetState
         val state = Await.result(f, timeout.duration).asInstanceOf[State]
-        assert(state.currentActivation.equals(25.0))
+        assert(state.activation.equals(25.0))
 
         ref ! NewActivation(10.0)
         val f2 = ref ? GetState
         val state2 = Await.result(f2, timeout.duration).asInstanceOf[State]
-        assert(state2.currentActivation.equals(10.0))
+        assert(state2.activation.equals(10.0))
       }
     }
   }

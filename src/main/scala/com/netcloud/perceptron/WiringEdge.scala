@@ -15,6 +15,7 @@ trait Edge{
  */
 trait InputEdge extends Edge{
   def listen(f : ((Double,Double)) => Unit)
+  def backfeed(error : Double) : WiringEdge
 }
 
 /**
@@ -43,6 +44,14 @@ case class WiringEdge private (weight : Double, channel : Subject[(Double, Doubl
    */
   def listen(f : ((Double, Double)) => Unit){
     channel.subscribe(f)
+  }
+
+  /**
+    * this is not very functional, we need a better solution
+    * @param error
+    */
+  override def backfeed(error: Double) : WiringEdge = {
+    WiringEdge(weight-error,channel)
   }
 }
 object WiringEdge{
