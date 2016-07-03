@@ -1,7 +1,6 @@
 package com.netcloud.perceptron
 
 import com.netcloud.perceptron.Perceptron.Activatable
-import scala.languageFeature.postfixOps
 import scala.async.Async.async
 import scala.concurrent.ExecutionContext.Implicits.global
 import rx.lang.scala.Observable

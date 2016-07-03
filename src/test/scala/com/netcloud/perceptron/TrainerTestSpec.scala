@@ -1,11 +1,11 @@
 package com.netcloud.perceptron
 
 import akka.util.Timeout
-import com.netcloud.training.StateActor.State
 import org.scalatest.WordSpec
+
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import com.netcloud.training.Trainer
+import com.netcloud.training.{CurrentActivation, Trainer}
 
 /**
   * Created by markkeinhorster on 07.01.16.
@@ -29,7 +29,7 @@ class TrainerTestSpec extends WordSpec {
         edge2.push(1)
 
         Thread.sleep(1000)
-        val result = Await.result(p.getState(), timeout.duration).asInstanceOf[State]
+        val result = Await.result(p.getState, timeout.duration).asInstanceOf[CurrentActivation]
         assert(result.activation >= 0.5)
       }
     }
@@ -51,7 +51,7 @@ class TrainerTestSpec extends WordSpec {
         edge2.push(1)
 
         Thread.sleep(1000)
-        val result = Await.result(p.getState(), timeout.duration).asInstanceOf[State]
+        val result = Await.result(p.getState, timeout.duration).asInstanceOf[CurrentActivation]
         val error = 0.5
         val wire = p.backpropagate(error, result)
       }

@@ -46,3 +46,7 @@ project/project
 .cache-main
 .cache-tests
 /bin/
+
+#Ensime
+.ensime
+.ensime_cache

@@ -1,13 +1,12 @@
 package com.netcloud.training
 
 import akka.actor.Actor
-import com.netcloud.training.StateActor.{NewActivation, GetState, State}
 
 /**
   * Helps during the training phase to keep the last activation in a
   * fully functional manner
   */
-class StateActor extends Actor{
+class ActivationKeeper extends Actor{
 
   /**
     * Initial receive that is able to store the current activation of an perceptron
@@ -23,23 +22,21 @@ class StateActor extends Actor{
     */
   def receiveWithState(activation : Double) : Receive = {
     case NewActivation(value) => context.become(receiveWithState(value))
-    case GetState => sender ! State(activation)
+    case GetActivation => sender ! CurrentActivation(activation)
   }
 }
-object StateActor{
 
-  /**
-    * Message that can be asked in order to return the current state of the perceptron
-    */
-  case object GetState
+/**
+  * Message that can be asked in order to return the current state of the perceptron
+  */
+case object GetActivation
 
-  /**
-    * Message to send the current activation value of the perceptron
-    */
-  case class NewActivation(value : Double)
+/**
+  * Message to send the current activation value of the perceptron
+  */
+case class NewActivation(value : Double)
 
-  /**
-    * Current state of the perceptron that gets sent as an answer
-    */
-  case class State(activation : Double)
-}
+/**
+  * Current state of the perceptron that gets sent as an answer
+  */
+case class CurrentActivation(activation : Double)

@@ -14,7 +14,7 @@ trait Edge{
  * Abstraction for edges acting as an input to a perceptron
  */
 trait InputEdge extends Edge{
-  def listen(f : ((Double,Double)) => Unit)
+  def listen(f : ((Double,Double)) => Unit) : Unit
   def backfeed(error : Double) : WiringEdge
 }
 
@@ -22,7 +22,7 @@ trait InputEdge extends Edge{
  * Abstraction for edges acting as an output from a perceptron
  */
 trait OutputEdge extends Edge{
-  def push(activation : Double)
+  def push(activation : Double) : Unit
 }
 
 /**
@@ -31,28 +31,28 @@ trait OutputEdge extends Edge{
  * <<- It is a case class to use the copy function ->>
  */
 case class WiringEdge private (weight : Double, channel : Subject[(Double, Double)]) extends InputEdge with OutputEdge{
-  
+
   /**
    * Pushing the activation value from one perceptron to another
    */
-  def push(activation : Double){
-    channel.onNext(activation, weight)
+  def push(activation : Double) : Unit = {
+    channel.onNext((activation, weight))
   }
-  
+
   /**
    * Listen to the channel to receive new activation values from a perceptron
    */
-  def listen(f : ((Double, Double)) => Unit){
+  def listen(f : ((Double, Double)) => Unit) : Unit = {
     channel.subscribe(f)
   }
 
   /**
-    * this is not very functional, we need a better solution
-    * @param error
+    * we backfeed the delta to create a new - adjusted - channel
     */
-  override def backfeed(error: Double) : WiringEdge = {
-    WiringEdge(weight-error,channel)
+  override def backfeed(delta: Double) : WiringEdge = {
+    WiringEdge(weight+delta,channel)
   }
+
 }
 object WiringEdge{
 	def apply(weight : Double): WiringEdge = new WiringEdge(weight, Subject[(Double, Double)]())
