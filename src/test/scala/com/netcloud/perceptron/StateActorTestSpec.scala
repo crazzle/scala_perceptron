@@ -6,7 +6,7 @@ import akka.util.Timeout
 import com.netcloud.GlobalContext
 import com.netcloud.training.{ActivationKeeper, CurrentActivation, GetActivation, NewActivation}
 import org.scalatest.WordSpec
-
+import scala.language.postfixOps
 import scala.concurrent.Await
 import scala.concurrent.duration._
 

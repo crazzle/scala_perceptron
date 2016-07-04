@@ -7,7 +7,6 @@ import com.netcloud.perceptron.Perceptron.Activatable
 import GlobalContext.globalActorSystem
 import akka.pattern.ask
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 
 /**
