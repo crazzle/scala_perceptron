@@ -4,7 +4,7 @@ import akka.actor.Props
 import akka.pattern.ask
 import akka.util.Timeout
 import com.netcloud.GlobalContext
-import com.netcloud.training.{ActivationKeeper, Activation, GetActivation, Expectation}
+import com.netcloud.training.{ActivationKeeper, Activation, GetActivation}
 import org.scalatest.WordSpec
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -16,7 +16,6 @@ class StateActorTestSpec extends WordSpec {
     "send an Activation" should {
       "should store the current value" in {
         val ref = GlobalContext.globalActorSystem.actorOf(Props[ActivationKeeper])
-        ref ! Expectation(0)
         ref ! Activation(25.0)
         val f = ref ? GetActivation
         val state = Await.result(f, timeout.duration).asInstanceOf[Activation]

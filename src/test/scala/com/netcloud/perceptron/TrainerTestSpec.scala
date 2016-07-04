@@ -23,7 +23,6 @@ class TrainerTestSpec extends WordSpec {
 
         val out = WiringEdge()
         val p : Trainer = new Perceptron("p", ins, out) with Trainer
-        p.tellExptected(-1)
 
         statEdge.push(1)
         edge1.push(1)
@@ -32,30 +31,6 @@ class TrainerTestSpec extends WordSpec {
         Thread.sleep(1000)
         val result = Await.result(p.getActivation, timeout.duration).asInstanceOf[Activation]
         assert(result.value >= 0.5)
-      }
-    }
-  }
-
-  "A trainer" when {
-    "be stackable" should {
-      "should propose a new weight based on backpropagation" in {
-        val statEdge = WiringEdge(-1.5)
-        val edge1 = WiringEdge(1)
-        val edge2 = WiringEdge(1)
-        val ins = List[InputEdge](statEdge, edge1, edge2)
-
-        val out = WiringEdge()
-        val p : Trainer = new Perceptron("p", ins, out) with Trainer
-        p.tellExptected(-1)
-
-        statEdge.push(1)
-        edge1.push(1)
-        edge2.push(1)
-
-        Thread.sleep(1000)
-        val result = Await.result(p.getActivation, timeout.duration).asInstanceOf[Activation]
-        val error = 0.5
-        val wire = p.backpropagate(error, result)
       }
     }
   }
