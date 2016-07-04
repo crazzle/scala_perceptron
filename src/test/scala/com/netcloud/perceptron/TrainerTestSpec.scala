@@ -5,13 +5,13 @@ import org.scalatest.WordSpec
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import com.netcloud.training.{CurrentActivation, Trainer}
+import com.netcloud.training.{Activation, Trainer}
 
 /**
   * Created by markkeinhorster on 07.01.16.
   */
 class TrainerTestSpec extends WordSpec {
-  implicit val timeout = Timeout(5 seconds)
+  implicit val timeout = Timeout(5.seconds)
 
   "A trainer" when {
     "be stackable" should {
@@ -23,14 +23,15 @@ class TrainerTestSpec extends WordSpec {
 
         val out = WiringEdge()
         val p : Trainer = new Perceptron("p", ins, out) with Trainer
+        p.tellExptected(-1)
 
         statEdge.push(1)
         edge1.push(1)
         edge2.push(1)
 
         Thread.sleep(1000)
-        val result = Await.result(p.getState, timeout.duration).asInstanceOf[CurrentActivation]
-        assert(result.activation >= 0.5)
+        val result = Await.result(p.getActivation, timeout.duration).asInstanceOf[Activation]
+        assert(result.value >= 0.5)
       }
     }
   }
@@ -45,13 +46,14 @@ class TrainerTestSpec extends WordSpec {
 
         val out = WiringEdge()
         val p : Trainer = new Perceptron("p", ins, out) with Trainer
+        p.tellExptected(-1)
 
         statEdge.push(1)
         edge1.push(1)
         edge2.push(1)
 
         Thread.sleep(1000)
-        val result = Await.result(p.getState, timeout.duration).asInstanceOf[CurrentActivation]
+        val result = Await.result(p.getActivation, timeout.duration).asInstanceOf[Activation]
         val error = 0.5
         val wire = p.backpropagate(error, result)
       }

@@ -7,7 +7,7 @@ import com.netcloud.perceptron.Perceptron.Activatable
 import GlobalContext.globalActorSystem
 import akka.pattern.ask
 import scala.concurrent.duration._
-
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Trait that is stackable in order to enhance an Activatable to keep track of the last set activation
@@ -27,8 +27,8 @@ trait Trainer extends Activatable {
   /**
     * Backpropagation edge
     */
-  def backpropagate(error : Double, state : CurrentActivation) = {
-    channels.foreach(inputedge => inputedge.backfeed(state.activation - error))
+  def backpropagate(error : Double, activation : Activation) = {
+    channels.foreach(inputedge => inputedge.backfeed(activation.value - error))
   } //Bind the inputchannels to the backpropagation edge in order to adapt the error
 
   /**
@@ -36,21 +36,24 @@ trait Trainer extends Activatable {
     */
   abstract override def activate(values: Seq[(Double, Double)]): Double = {
     val activation = super.activate(values)
-    keeper ! NewActivation(activation)
+    keeper ! Activation(activation)
     activation
   }
 
-  /**
-    * Returns the current state of the Activatable
-    */
-  def getState = keeper ? GetActivation
+  def tellExptected(value : Double) = keeper ! Expectation(value)
 
-  /*def error = keeper ? GetActivation map { case CurrentActivation(activation) => {
-      channels.foldLeft(1D){
-        case (acc, el) => acc + (activation * (1-activation) * (expected - activation))
+  def getActivation = keeper ? GetActivation
+
+  def expected = keeper ? GetExpectation
+
+  def error = keeper ? GetActivation map { case Activation(activation) => {
+    expected map { case Expectation(expectation) =>
+        channels.foldLeft(1D){
+          case (acc, el) => acc + (activation * (1-activation) * (expectation - activation))
+        }
       }
     }
-  }*/
+  }
 
   /*
   Outputlayer backprop:
