@@ -2,6 +2,9 @@ package com.netcloud.perceptron
 
 import org.scalatest.WordSpec
 
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Promise}
+
 class PerceptronTestSpec extends WordSpec {
   "A perceptron" when {
     "correctly wired up" should {
@@ -12,17 +15,17 @@ class PerceptronTestSpec extends WordSpec {
         val ins = List[InputEdge](statEdge, edge1, edge2)
 
         val out = WiringEdge()
-        var res: Boolean = false
+        val res = Promise[Boolean]()
         out.listen {
-          case (activation, weight) => res = activation >= 0.5
+          case (activation, weight) => res.success(activation >= 0.5)
         }
         Perceptron("p", ins, out)
 
         statEdge.push(1)
         edge1.push(1)
         edge2.push(1)
-        Thread.sleep(1000)
-        assert(res)
+        val result = Await.result(res.future,Duration.Inf)
+        assert(result)
       }
     }
   }
@@ -36,9 +39,9 @@ class PerceptronTestSpec extends WordSpec {
         val ins = List[InputEdge](statEdge, edge1, edge2)
 
         val out = WiringEdge()
-        var res: Boolean = false
+        val res = Promise[Boolean]()
         out.listen {
-          case (activation, weight) => res = activation < 0.5
+          case (activation, weight) => res.success(activation < 0.5)
         }
 
         Perceptron("p", ins, out)
@@ -47,21 +50,8 @@ class PerceptronTestSpec extends WordSpec {
         edge1.push(1)
         edge2.push(0)
         Thread.sleep(1000)
-        assert(res)
-
-        res = false
-        statEdge.push(1)
-        edge1.push(0)
-        edge2.push(1)
-        Thread.sleep(1000)
-        assert(res)
-
-        res = false
-        statEdge.push(1)
-        edge1.push(0)
-        edge2.push(0)
-        Thread.sleep(1000)
-        assert(res)
+        val result = Await.result(res.future, Duration.Inf)
+        assert(result)
       }
     }
   }
@@ -71,9 +61,9 @@ class PerceptronTestSpec extends WordSpec {
       "properly recognize an XOR as TRUE" in {
         val (edgeA1, edgeA2, edgeB1, edgeB2, statEdge1, statEdge2, statEdgeLast, outLast) = buildXORMultiLayeredPerceptron()
 
-        var res = false
+        val res = Promise[Boolean]()
         outLast.listen {
-          case (activation, weight) => res = activation > 0
+          case (activation, weight) => res.success(activation > 0)
         }
 
         statEdge1.push(1)
@@ -83,19 +73,8 @@ class PerceptronTestSpec extends WordSpec {
         edgeA2.push(0)
         edgeB1.push(1)
         edgeB2.push(1)
-        Thread.sleep(1000)
-        assert(res)
-
-        res = false
-        statEdge1.push(1)
-        statEdge2.push(1)
-        statEdgeLast.push(1)
-        edgeA1.push(1)
-        edgeA2.push(1)
-        edgeB1.push(0)
-        edgeB2.push(0)
-        Thread.sleep(1000)
-        assert(res)
+        val result = Await.result(res.future, Duration.Inf)
+        assert(result)
       }
     }
   }
@@ -105,9 +84,9 @@ class PerceptronTestSpec extends WordSpec {
       "properly recognize an XOR as FALSE" in {
         val (edgeA1, edgeA2, edgeB1, edgeB2, statEdge1, statEdge2, statEdgeLast, outLast) = buildXORMultiLayeredPerceptron()
 
-        var res = false
+        val res = Promise[Boolean]()
         outLast.listen {
-          case (activation, weight) => res = activation < 0.5
+          case (activation, weight) => res.success(activation < 0.5)
         }
         statEdge1.push(1)
         statEdge2.push(1)
@@ -117,18 +96,8 @@ class PerceptronTestSpec extends WordSpec {
         edgeB1.push(1)
         edgeB2.push(1)
         Thread.sleep(1000)
-        assert(res)
-        res = false
-
-        statEdge1.push(1)
-        statEdge2.push(1)
-        statEdgeLast.push(1)
-        edgeA1.push(0)
-        edgeA2.push(0)
-        edgeB1.push(0)
-        edgeB2.push(0)
-        Thread.sleep(1000)
-        assert(res)
+        val result = Await.result(res.future, Duration.Inf)
+        assert(result)
       }
     }
   }

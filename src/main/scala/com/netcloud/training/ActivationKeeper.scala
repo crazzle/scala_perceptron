@@ -9,6 +9,7 @@ import akka.actor.Actor
 class ActivationKeeper extends Actor{
 
   override def receive : Receive = {
+    case GetActivation => sender ! IncompleteInputs
     case Activation(value) => context.become(receiveWithActivation(value))
   }
 
@@ -22,3 +23,5 @@ class ActivationKeeper extends Actor{
 case object GetActivation
 
 case class Activation(value : Double)
+
+case object IncompleteInputs

@@ -1,18 +1,15 @@
 package com.netcloud.perceptron
 
-import akka.util.Timeout
 import org.scalatest.WordSpec
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import com.netcloud.training.{Activation, Trainer}
+import com.netcloud.training.{Activation, IncompleteInputs, Trainer}
 
 /**
   * Created by markkeinhorster on 07.01.16.
   */
 class TrainerTestSpec extends WordSpec {
-  implicit val timeout = Timeout(5.seconds)
-
   "A trainer" when {
     "be stackable" should {
       "should store the current value" in {
@@ -28,10 +25,18 @@ class TrainerTestSpec extends WordSpec {
         edge1.push(1)
         edge2.push(1)
 
-        Thread.sleep(1000)
-        val result = Await.result(p.getActivation, timeout.duration).asInstanceOf[Activation]
+        val result = getActivation(p)
         assert(result.value >= 0.5)
       }
+    }
+  }
+
+  def getActivation(p : Trainer) : Activation = {
+    Await.result(p.getActivation, Duration.Inf) match {
+      case IncompleteInputs => {
+        getActivation(p)
+      }
+      case a : Activation => a
     }
   }
 }

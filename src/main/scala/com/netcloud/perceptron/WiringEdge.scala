@@ -2,6 +2,8 @@ package com.netcloud.perceptron
 
 import rx.lang.scala.Subject
 
+import scala.util.Random
+
 /**
  * Abstraction for an edge, that contains a weight
  */
@@ -47,6 +49,6 @@ case class WiringEdge private (weight : Double, channel : Subject[(Double, Doubl
 
 }
 object WiringEdge{
-	def apply(weight : Double): WiringEdge = new WiringEdge(weight, Subject[(Double, Double)]())
+	def apply(weight : Double = math.random): WiringEdge = new WiringEdge(weight, Subject[(Double, Double)]())
   def apply(): WiringEdge = new WiringEdge(0, Subject[(Double, Double)]())
 }

@@ -2,33 +2,19 @@ package com.netcloud.perceptron
 
 import org.scalatest.WordSpec
 
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Promise}
+
 class EdgeTestSpec extends WordSpec {
   "An edge" when {
     "activation pushed" should {
       "push to function" in {
-        var res = false
+        val res = Promise[Boolean]()
         val edge = WiringEdge(1)
-        edge.listen { act => res = act == (1, 1) }
+        edge.listen { act => res.success(act == (1, 1)) }
         edge.push((1))
-        Thread.sleep(1000)
-        assert(res)
-      }
-    }
-
-    "multiple activations pushed" should {
-      "push to function" in {
-        var res = false
-        val edge = WiringEdge(1)
-        edge.listen { act => res = act == (1, 1) }
-        edge.push((1))
-        Thread.sleep(1000)
-        assert(res)
-
-        res = false
-        edge.push((1))
-        Thread.sleep(1000)
-        assert(res)
-
+        val result = Await.result(res.future,Duration.Inf)
+        assert(result)
       }
     }
   }
