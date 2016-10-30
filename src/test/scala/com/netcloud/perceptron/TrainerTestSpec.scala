@@ -16,7 +16,7 @@ class TrainerTestSpec extends WordSpec {
         val statEdge = WiringEdge(-1.5)
         val edge1 = WiringEdge(1)
         val edge2 = WiringEdge(1)
-        val ins = List[InputEdge](statEdge, edge1, edge2)
+        val ins = List[Edge](statEdge, edge1, edge2)
 
         val out = WiringEdge()
         val p : Trainer = new Perceptron(ins, out) with Trainer

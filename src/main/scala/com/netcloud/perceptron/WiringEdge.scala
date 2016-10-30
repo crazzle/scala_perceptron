@@ -8,28 +8,17 @@ import rx.lang.scala.Subject
 trait Edge{
   val channel : Subject[(Double, Double)]
   val weight : Double
-}
-
-/**
- * Abstraction for edges acting as an input to a perceptron
- */
-trait InputEdge extends Edge{
   def listen(f : ((Double,Double)) => Unit) : Unit
-}
-
-/**
- * Abstraction for edges acting as an output from a perceptron
- */
-trait OutputEdge extends Edge{
   def push(activation : Double) : Unit
 }
+
 
 /**
  * An edge wires @{Perceptron}s up
  * It contains a channel and a weight
  * <<- It is a case class to use the copy function ->>
  */
-case class WiringEdge private (weight : Double, channel : Subject[(Double, Double)]) extends InputEdge with OutputEdge{
+case class WiringEdge private (weight : Double, channel : Subject[(Double, Double)]) extends Edge{
 
   /**
    * Pushing the activation value from one perceptron to another
