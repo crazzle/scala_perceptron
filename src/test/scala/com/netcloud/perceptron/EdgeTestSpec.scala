@@ -12,7 +12,7 @@ class EdgeTestSpec extends WordSpec {
         val res = Promise[Boolean]()
         val edge = WiringEdge(1)
         edge.listen { act => res.success(act == (1, 1)) }
-        edge.push((1))
+        edge.push(1)
         val result = Await.result(res.future,Duration.Inf)
         assert(result)
       }

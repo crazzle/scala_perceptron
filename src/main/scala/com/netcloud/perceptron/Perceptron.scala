@@ -12,8 +12,7 @@ import scala.collection.immutable.Queue
  * As soon as all inputs are defined it calculates the output value
  * and broadcasts it to all outputchannel.
  */
-case class Perceptron(name: String,
-                      inputEdges: List[InputEdge],
+case class Perceptron(inputEdges: List[InputEdge],
                       outputEdge: OutputEdge,
                       f: (Double) => Double = Perceptron.sigmoid) extends Activatable {
 
@@ -65,6 +64,18 @@ case class Perceptron(name: String,
   override def channels = inputEdges
 }
 object Perceptron {
+  case class WiringResult(perceptron : Perceptron, outputEdge : WiringEdge)
+
+  def apply(edges : List[WiringEdge],
+            wire : WiringEdge,
+            outputEdge : WiringEdge) : WiringResult = {
+
+    wire.listen {
+      case (activation, weight) => outputEdge.push(activation * weight)
+    }
+    WiringResult(new Perceptron(edges, wire), outputEdge)
+  }
+
   /**
     * Sigmoid function that is used during the activation
     */
