@@ -4,7 +4,7 @@ An asynchronous implementation of a perceptron in Scala to model different varia
 The implementation gives the user the full flexibility from the definition of the activation function to wiring up each neuron
 individually.
 
-**To-Do**
+**To-Do**  
 [X] Wire and model perceptrons setting wedge weights manually  
 [X] Make result of the perceptron activation accessible using Trainer trait  
 [_] Implement example of backpropagation for training  
