@@ -117,6 +117,9 @@ class PerceptronTestSpec extends WordSpec {
    * Wires a multilayered perceptron up
    */
   def buildXORMultiLayeredPerceptron(): (WiringEdge, WiringEdge, WiringEdge) = {
+    /**
+     * Inputs for the neural network
+     */
     val inputA = WiringEdge(1)
     val inputB = WiringEdge(1)
 
