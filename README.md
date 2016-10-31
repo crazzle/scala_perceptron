@@ -1,5 +1,12 @@
 # scala_perceptron [![Build Status](https://travis-ci.org/crazzle/scala_perceptron.svg)](https://travis-ci.org/crazzle/scala_perceptron)
-A non-blocking perceptron implementation in scala to build multi layered perceptrons
+An asynchronous implementation of a perceptron in Scala to model different variations of multi layered neural networks.
+
+The implementation gives the user the full flexibility from the definition of the activation function to wiring up each neuron
+individually.
+
+
+![alt text](src/test/resources/xor_perceptron.png "Multi-layered perceptron to solve the XOR problem")
+
 
 ## MIT Licence
 Copyright (c) 2016 Mark Keinhörster

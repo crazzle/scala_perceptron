@@ -99,10 +99,10 @@ class PerceptronTestSpec extends WordSpec {
   "A perceptron" when {
     "correctly wired up" should {
       "properly recognize an XOR as FALSE when both is false" in {
-        val (inputA, inputB, output) = buildXORMultiLayeredPerceptron()
+        val (inputA, inputB, out) = buildXORMultiLayeredPerceptron()
 
         val res = Promise[Boolean]()
-        output.listen {
+        out.listen {
           case (activation, weight) => res.success(activation == 0)
         }
         inputA.push(0)
@@ -119,7 +119,6 @@ class PerceptronTestSpec extends WordSpec {
   def buildXORMultiLayeredPerceptron(): (WiringEdge, WiringEdge, WiringEdge) = {
     val inputA = WiringEdge(1)
     val inputB = WiringEdge(1)
-    val inputs = List(inputA, inputB)
 
     def xorHiddenEvalOuter = (d: Double) => {
       if(d == 1)
@@ -139,24 +138,24 @@ class PerceptronTestSpec extends WordSpec {
      * 1st Layer
      */
     // First Perceptron
-    val out1 = WiringEdge(1)
-    Perceptron(Seq(inputA), out1, xorHiddenEvalOuter)
+    val hidden1 = WiringEdge(1)
+    Perceptron(Seq(inputA), hidden1, xorHiddenEvalOuter)
 
     // Second Perceptron
-    val out2 = WiringEdge(-2)
-    Perceptron(Seq(inputA, inputB), out2, xorHiddenEvalInner)
+    val hidden2 = WiringEdge(-2)
+    Perceptron(Seq(inputA, inputB), hidden2, xorHiddenEvalInner)
 
     // Second Perceptron
-    val out3 = WiringEdge(1)
-    Perceptron(Seq(inputB), out3, xorHiddenEvalOuter)
+    val hidden3 = WiringEdge(1)
+    Perceptron(Seq(inputB), hidden3, xorHiddenEvalOuter)
 
     /**
      * Last Layer (output layer)
      */
-    val hiddenOutput = List[Edge](out1, out2, out3)
-    val output = WiringEdge(1)
-    Perceptron(hiddenOutput, output, (d: Double) => d)
+    val hiddenOutput = List[Edge](hidden1, hidden2, hidden3)
+    val out = WiringEdge(1)
+    Perceptron(hiddenOutput, out, (d: Double) => d)
 
-    (inputA, inputB, output)
+    (inputA, inputB, out)
   }
 }

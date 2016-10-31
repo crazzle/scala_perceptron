@@ -1,0 +1,20 @@
+digraph xorPerceptron {
+    rankdir="LR"
+
+    inputA [label="A"]
+    inputB [label="B"]
+    nodeOuter1 [label=<hidden1<br/><FONT POINT-SIZE="10">activation == 1 ? 1 : 0</FONT>>]
+    nodeOuter2 [label=<hidden2<br/><FONT POINT-SIZE="10">activation == 2 ? 1 : 0</FONT>>]
+    nodeOuter3 [label=<hidden3<br/><FONT POINT-SIZE="10">activation == 1 ? 1 : 0</FONT>>]
+    nodeOuterY [label=<out<br/><FONT POINT-SIZE="10">activation == 1 ? true : false</FONT>>]
+
+    inputA -> nodeOuter1 [label=1]
+    inputA -> nodeOuter2 [label=1]
+    inputB -> nodeOuter2 [label=1]
+    inputB -> nodeOuter3 [label=1]
+
+    nodeOuter1 -> nodeOuterY [label=1]
+    nodeOuter2 -> nodeOuterY [label=-2]
+    nodeOuter3 -> nodeOuterY [label=1]
+
+}
