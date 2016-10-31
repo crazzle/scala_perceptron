@@ -89,7 +89,6 @@ class PerceptronTestSpec extends WordSpec {
         edgeA2.push(1)
         edgeB1.push(1)
         edgeB2.push(1)
-        Thread.sleep(1000)
         val result = Await.result(res.future, Duration.Inf)
         assert(result)
       }
