@@ -15,12 +15,12 @@ object AutomatedExample extends App {
 
   val layer1 = Seq.fill(layer1Size)(Perceptron(inputEdges, WiringEdge(1)))
 
-  val layer1OutEdges = layer1.map{p => p.outputEdge}
+  val layer1OutEdges = layer1.map{p => p.output}
 
   val out = Perceptron(layer1OutEdges, WiringEdge(1))
 
   val p = Promise[Double]()
-  out.outputEdge.listen {
+  out.output.listen {
     case (activation, weight) => {
       p.success(activation)
     }

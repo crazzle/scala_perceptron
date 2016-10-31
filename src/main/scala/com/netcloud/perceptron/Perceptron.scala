@@ -13,8 +13,8 @@ import scala.collection.immutable.Queue
  * and pushes it to the outputchannel that other perceptrons can use
  * as its input.
  */
-case class Perceptron(inputEdges: Seq[Edge],
-                      outputEdge: Edge,
+case class Perceptron(inputs: Seq[Edge],
+                      output: Edge,
                       f: (Double) => Double = Perceptron.sigmoid) extends Activatable {
 
   /**
@@ -28,13 +28,13 @@ case class Perceptron(inputEdges: Seq[Edge],
    */
   private def init(): Unit = {
     val typedEmpty = Observable[(Double, Double)] { x => }
-    inputEdges
+    inputs
       .map(x => x.channel)
       .foldLeft(typedEmpty)((el, acc) => acc.merge(el))
       .scan(Queue.empty[(Double, Double)])((acc, el) =>
         (acc, el) match {
           case (list, activation) =>
-            if (list.size < inputEdges.size) {
+            if (list.size < inputs.size) {
               list :+ activation
             } else {
               Queue.empty[(Double, Double)] :+ activation
@@ -42,7 +42,7 @@ case class Perceptron(inputEdges: Seq[Edge],
         })
       .subscribe { activations =>
         async {
-          if (activations.size == inputEdges.size) {
+          if (activations.size == inputs.size) {
             activate(activations)
           }
         }
@@ -52,17 +52,13 @@ case class Perceptron(inputEdges: Seq[Edge],
   /**
    * The activation function
    */
-  override def activate(values: Seq[(Double, Double)]): Double = {
+  override def activate(values: Seq[(Double, Double)]) : Double = {
     val value = values.foldLeft(0.0)((acc, el) => acc + (el._1 * el._2))
     val activation = f(value)
-    outputEdge.push(activation)
+    output.push(activation)
     activation
   }
 
-  /**
-    * provide the channels
-    */
-  override def channels = inputEdges
 }
 object Perceptron {
 
@@ -78,7 +74,6 @@ object Perceptron {
     * enough values pushed over the edges
     */
   trait Activatable {
-    def activate(values: Seq[(Double, Double)]): Double
-    def channels : Seq[Edge]
+    def activate(values: Seq[(Double, Double)]) : Double
   }
 }
