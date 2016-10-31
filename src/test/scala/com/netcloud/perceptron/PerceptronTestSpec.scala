@@ -82,6 +82,7 @@ class PerceptronTestSpec extends WordSpec {
         output.listen {
           case (activation, weight) => res.success(activation < 0.5)
         }
+
         inputA.push(1)
         inputB.push(1)
         val result = Await.result(res.future, Duration.Inf)
