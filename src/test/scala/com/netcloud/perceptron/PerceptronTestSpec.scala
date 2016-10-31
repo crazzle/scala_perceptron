@@ -62,7 +62,9 @@ class PerceptronTestSpec extends WordSpec {
 
         val res = Promise[Boolean]()
         output.listen {
-          case (activation, weight) => res.success(activation > 0.5)
+          case (activation, weight) => {
+            res.success(activation == 1)
+          }
         }
 
         inputA.push(1)
@@ -80,7 +82,10 @@ class PerceptronTestSpec extends WordSpec {
 
         val res = Promise[Boolean]()
         output.listen {
-          case (activation, weight) => res.success(activation < 0.5)
+          case (activation, weight) =>
+            {
+              res.success(activation == 0)
+            }
         }
 
         inputA.push(1)
@@ -98,7 +103,7 @@ class PerceptronTestSpec extends WordSpec {
 
         val res = Promise[Boolean]()
         output.listen {
-          case (activation, weight) => res.success(activation < 0.5)
+          case (activation, weight) => res.success(activation == 0)
         }
         inputA.push(0)
         inputB.push(0)
@@ -116,8 +121,15 @@ class PerceptronTestSpec extends WordSpec {
     val inputB = WiringEdge(1)
     val inputs = List(inputA, inputB)
 
-    def xorHiddenEval = (d: Double) => {
+    def xorHiddenEvalOuter = (d: Double) => {
       if(d == 1)
+        1d
+      else
+        0d
+    }
+
+    def xorHiddenEvalInner = (d: Double) => {
+      if(d == 2)
         1d
       else
         0d
@@ -128,16 +140,20 @@ class PerceptronTestSpec extends WordSpec {
      */
     // First Perceptron
     val out1 = WiringEdge(1)
-    Perceptron(inputs, out1, xorHiddenEval)
+    Perceptron(Seq(inputA), out1, xorHiddenEvalOuter)
 
     // Second Perceptron
-    val out2 = WiringEdge(1)
-    Perceptron(inputs, out2, xorHiddenEval)
+    val out2 = WiringEdge(-2)
+    Perceptron(Seq(inputA, inputB), out2, xorHiddenEvalInner)
+
+    // Second Perceptron
+    val out3 = WiringEdge(1)
+    Perceptron(Seq(inputB), out3, xorHiddenEvalOuter)
 
     /**
      * Last Layer (output layer)
      */
-    val hiddenOutput = List[Edge](out1, out2)
+    val hiddenOutput = List[Edge](out1, out2, out3)
     val output = WiringEdge(1)
     Perceptron(hiddenOutput, output, (d: Double) => d)
 
