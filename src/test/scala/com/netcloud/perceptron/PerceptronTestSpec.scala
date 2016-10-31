@@ -120,34 +120,17 @@ class PerceptronTestSpec extends WordSpec {
     val inputA = WiringEdge(1)
     val inputB = WiringEdge(1)
 
-    def xorHiddenEvalOuter = (d: Double) => {
-      if(d == 1)
-        1d
-      else
-        0d
-    }
-
-    def xorHiddenEvalInner = (d: Double) => {
-      if(d == 2)
-        1d
-      else
-        0d
-    }
-
     /**
      * 1st Layer
      */
-    // First Perceptron
     val hidden1 = WiringEdge(1)
-    Perceptron(Seq(inputA), hidden1, xorHiddenEvalOuter)
+    Perceptron(Seq(inputA), hidden1, {case d => if(d == 1) 1d else 0d})
 
-    // Second Perceptron
     val hidden2 = WiringEdge(-2)
-    Perceptron(Seq(inputA, inputB), hidden2, xorHiddenEvalInner)
+    Perceptron(Seq(inputA, inputB), hidden2, {case d => if(d == 2) 1d else 0d})
 
-    // Second Perceptron
     val hidden3 = WiringEdge(1)
-    Perceptron(Seq(inputB), hidden3, xorHiddenEvalOuter)
+    Perceptron(Seq(inputB), hidden3, {case d => if(d == 1) 1d else 0d})
 
     /**
      * Last Layer (output layer)
