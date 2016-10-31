@@ -59,16 +59,13 @@ class PerceptronTestSpec extends WordSpec {
   "A perceptron" when {
     "correctly wired up" should {
       "properly recognize an XOR as TRUE" in {
-        val (edgeA1, edgeA2, edgeB1, edgeB2, statEdge1, statEdge2, statEdgeLast, outLast) = buildXORMultiLayeredPerceptron()
+        val (edgeA1, edgeA2, edgeB1, edgeB2, outLast) = buildXORMultiLayeredPerceptron()
 
         val res = Promise[Boolean]()
         outLast.listen {
           case (activation, weight) => res.success(activation > 0)
         }
 
-        statEdge1.push(1)
-        statEdge2.push(1)
-        statEdgeLast.push(1)
         edgeA1.push(0)
         edgeA2.push(0)
         edgeB1.push(1)
@@ -82,15 +79,12 @@ class PerceptronTestSpec extends WordSpec {
   "A perceptron" when {
     "correctly wired up" should {
       "properly recognize an XOR as FALSE" in {
-        val (edgeA1, edgeA2, edgeB1, edgeB2, statEdge1, statEdge2, statEdgeLast, outLast) = buildXORMultiLayeredPerceptron()
+        val (edgeA1, edgeA2, edgeB1, edgeB2, outLast) = buildXORMultiLayeredPerceptron()
 
         val res = Promise[Boolean]()
         outLast.listen {
           case (activation, weight) => res.success(activation < 0.5)
         }
-        statEdge1.push(1)
-        statEdge2.push(1)
-        statEdgeLast.push(1)
         edgeA1.push(1)
         edgeA2.push(1)
         edgeB1.push(1)
@@ -105,27 +99,24 @@ class PerceptronTestSpec extends WordSpec {
   /**
    * Wires a multilayered perceptron up
    */
-  def buildXORMultiLayeredPerceptron(): (WiringEdge, WiringEdge, WiringEdge, WiringEdge, WiringEdge, WiringEdge, WiringEdge, WiringEdge) = {
+  def buildXORMultiLayeredPerceptron(): (WiringEdge, WiringEdge, WiringEdge, WiringEdge, WiringEdge) = {
     // P1 input
     val edgeA1 = WiringEdge(1)
-    val edgeA2 = WiringEdge(-1)
-    val statEdge1 = WiringEdge(-0.5)
+    val edgeB1 = WiringEdge(-1)
 
     // P2 input
-    val edgeB1 = WiringEdge(-1)
+    val edgeA2 = WiringEdge(-1)
     val edgeB2 = WiringEdge(1)
-    val statEdge2 = WiringEdge(-0.5)
 
     //
     val edgeLast1 = WiringEdge(1)
     val edgeLast2 = WiringEdge(1)
-    val statEdgeLast = WiringEdge(-0.5)
 
     /**
      * 1st Layer
      */
     // First Perceptron
-    val a = List[Edge](edgeA1, edgeB1, statEdge1)
+    val a = List[Edge](edgeA1, edgeB1)
     val out1 = WiringEdge()
     out1.listen {
       case (activation, weight) => edgeLast1.push(if (activation > 0) 1 else 0)
@@ -133,7 +124,7 @@ class PerceptronTestSpec extends WordSpec {
     Perceptron(a, out1, (d: Double) => d)
 
     // Second Perceptron
-    val b = List[Edge](edgeB2, edgeA2, statEdge2)
+    val b = List[Edge](edgeB2, edgeA2)
     val out2 = WiringEdge()
     out2.listen {
       case (activation, weight) => edgeLast2.push(if (activation > 0) 1 else 0)
@@ -143,10 +134,10 @@ class PerceptronTestSpec extends WordSpec {
     /**
      * Last Layer (output layer)
      */
-    val insLast = List[Edge](edgeLast1, edgeLast2, statEdgeLast)
+    val insLast = List[Edge](edgeLast1, edgeLast2)
     val outLast = WiringEdge()
     Perceptron(insLast, outLast, (d: Double) => d)
 
-    (edgeA1, edgeA2, edgeB1, edgeB2, statEdge1, statEdge2, statEdgeLast, outLast)
+    (edgeA1, edgeA2, edgeB1, edgeB2, outLast)
   }
 }
