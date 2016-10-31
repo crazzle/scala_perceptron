@@ -8,7 +8,7 @@ import scala.collection.immutable.Queue
 
 /**
  * A @{Perceptron} is the core component of a neural net.
- * It consists of multiple inputchannel and a outputchannel.
+ * It consists of multiple inputchannel and an outputchannel.
  * As soon as all inputs are defined it calculates the output value
  * and pushes it to the outputchannel that other perceptrons can use
  * as its input.
