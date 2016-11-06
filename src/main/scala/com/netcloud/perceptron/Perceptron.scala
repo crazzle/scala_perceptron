@@ -2,9 +2,8 @@ package com.netcloud.perceptron
 
 import com.netcloud.perceptron.Perceptron.Activatable
 import scala.async.Async.async
-import scala.concurrent.ExecutionContext.Implicits.global
 import rx.lang.scala.Observable
-import scala.collection.immutable.Queue
+import scala.concurrent.ExecutionContext
 
 /**
  * A @{Perceptron} is the core component of a neural net.
@@ -15,7 +14,8 @@ import scala.collection.immutable.Queue
  */
 case class Perceptron(inputs: Seq[Edge],
                       output: Edge,
-                      f: (Double) => Double = Perceptron.sigmoid) extends Activatable {
+                      f: (Double) => Double = Perceptron.sigmoid)
+                     (implicit ec : ExecutionContext) extends Activatable {
 
   /**
     * Run at instantiation to initialize the perceptrons input-stream
@@ -27,23 +27,22 @@ case class Perceptron(inputs: Seq[Edge],
    * function to all input edges
    */
   private def init(): Unit = {
-    val typedEmpty = Observable[(Double, Double)] { x => }
+    val typedEmpty : Observable[(Double)] = Observable.empty
     inputs
-      .map(x => x.channel)
+      .map(x => x.channel.map{case (activation, weight) => activation * weight})
       .foldLeft(typedEmpty)((el, acc) => acc.merge(el))
-      .scan(Queue.empty[(Double, Double)])((acc, el) =>
-        (acc, el) match {
-          case (list, activation) =>
-            if (list.size < inputs.size) {
-              list :+ activation
-            } else {
-              Queue.empty[(Double, Double)] :+ activation
-            }
-        })
+      .scan((0d,0)){
+        case ((sumValue, count), value) => {
+          if(count < inputs.size)
+            (sumValue+value, count + 1)
+          else
+            (0d,0)
+        }
+      }
       .subscribe { activations =>
         async {
-          if (activations.size == inputs.size) {
-            activate(activations)
+          if (activations._2 == inputs.size) {
+            activate(activations._1)
           }
         }
       }
@@ -52,8 +51,7 @@ case class Perceptron(inputs: Seq[Edge],
   /**
    * The activation function
    */
-  override def activate(values: Seq[(Double, Double)]) : Double = {
-    val value = values.foldLeft(0.0)((acc, el) => acc + (el._1 * el._2))
+  override def activate(value: Double) : Double = {
     val activation = f(value)
     output.push(activation)
     activation
@@ -74,6 +72,6 @@ object Perceptron {
     * enough values pushed over the edges
     */
   trait Activatable {
-    def activate(values: Seq[(Double, Double)]) : Double
+    def activate(value: Double) : Double
   }
 }

@@ -20,8 +20,8 @@ trait Trainer extends Activatable {
 
   def getActivation = memory ? GetActivation
 
-  abstract override def activate(values: Seq[(Double, Double)]): Double = {
-    val activation = super.activate(values)
+  abstract override def activate(value: Double): Double = {
+    val activation = super.activate(value)
     memory ! Activation(activation)
     activation
   }

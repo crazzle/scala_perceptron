@@ -1,7 +1,7 @@
 package com.netcloud.perceptron
 
 import org.scalatest.WordSpec
-
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Promise}
 

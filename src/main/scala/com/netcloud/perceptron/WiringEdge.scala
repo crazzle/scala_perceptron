@@ -2,6 +2,9 @@ package com.netcloud.perceptron
 
 import rx.lang.scala.Subject
 
+import scala.async.Async.async
+import scala.concurrent.ExecutionContext
+
 /**
  * Abstraction for an edge, that contains a weight
  */
@@ -18,13 +21,16 @@ trait Edge{
  * It contains a channel and a weight
  * <<- It is a case class to use the copy function ->>
  */
-case class WiringEdge private (weight : Double, channel : Subject[(Double, Double)]) extends Edge{
+case class WiringEdge private (weight : Double, channel : Subject[(Double, Double)])
+                              (implicit ec : ExecutionContext) extends Edge{
 
   /**
    * Pushing the activation value from one perceptron to another
    */
   def push(activation : Double) : Unit = {
-    channel.onNext((activation, weight))
+    async {
+      channel.onNext((activation, weight))
+    }
   }
 
   /**
@@ -36,5 +42,6 @@ case class WiringEdge private (weight : Double, channel : Subject[(Double, Doubl
 
 }
 object WiringEdge{
-	def apply(weight : Double = math.random): WiringEdge = new WiringEdge(weight, Subject[(Double, Double)]())
+  def apply(weight : Double = math.random)(implicit ec : ExecutionContext)
+           : WiringEdge = new WiringEdge(weight, Subject[(Double, Double)]())
 }

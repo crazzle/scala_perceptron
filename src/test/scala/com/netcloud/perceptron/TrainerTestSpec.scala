@@ -1,7 +1,7 @@
 package com.netcloud.perceptron
 
 import org.scalatest.WordSpec
-
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import com.netcloud.training.{Activation, IncompleteInputs, Trainer}
