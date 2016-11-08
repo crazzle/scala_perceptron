@@ -1,8 +1,11 @@
 package com.netcloud.perceptron
 
 import com.netcloud.perceptron.Perceptron.Activatable
+import rx.lang.scala.subjects.{SerializedSubject}
+
 import scala.async.Async.async
-import rx.lang.scala.Observable
+import rx.lang.scala.{Subject}
+
 import scala.concurrent.ExecutionContext
 
 /**
@@ -27,19 +30,18 @@ case class Perceptron(inputs: Seq[Edge],
    * function to all input edges
    */
   private def init(): Unit = {
-    val typedEmpty : Observable[(Double)] = Observable.empty
-    inputs
-      .map(x => x.channel.map{case (activation, weight) => activation * weight})
-      .foldLeft(typedEmpty)((el, acc) => acc.merge(el))
-      .scan((0d,0)){
-        case ((sumValue, count), value) => {
-          if(count < inputs.size)
-            (sumValue+value, count + 1)
-          else
-            (0d,0)
-        }
+    val merged = SerializedSubject(Subject[Double]())
+    inputs.map(_.channel.map{case (activation, weight) => activation * weight})
+      .foreach(_.subscribe(merged.onNext(_)))
+
+    merged.scan((0d,0)){
+      case ((sumValue, count), value) => {
+        if(count < inputs.size)
+          (sumValue+value, count + 1)
+        else
+          (0d,0)
       }
-      .subscribe { activations =>
+    }.subscribe { activations =>
         async {
           if (activations._2 == inputs.size) {
             activate(activations._1)

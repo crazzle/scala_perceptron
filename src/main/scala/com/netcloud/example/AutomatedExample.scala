@@ -11,8 +11,8 @@ object AutomatedExample extends App {
   val pec = ExecutionContexts.fromExecutor(Executors.newFixedThreadPool(4))
   val wec = ExecutionContexts.fromExecutor(Executors.newFixedThreadPool(6))
 
-  val numInputs = 750
-  val layer1Size = 750
+  val numInputs = 900
+  val layer1Size = 900
   val outSize = 1
 
   val inputEdges = Seq.fill(numInputs)(WiringEdge(1)(wec))
@@ -29,7 +29,7 @@ object AutomatedExample extends App {
       p.success(activation)
     }
   }
-
+  //val name = scala.io.StdIn.readLine("What's your name? ")
   val now = System.currentTimeMillis().toDouble
   inputEdges.foreach(_.push(1))
   val intermediate = System.currentTimeMillis().toDouble
