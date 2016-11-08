@@ -29,7 +29,7 @@ object AutomatedExample extends App {
       p.success(activation)
     }
   }
-  //val name = scala.io.StdIn.readLine("What's your name? ")
+
   val now = System.currentTimeMillis().toDouble
   inputEdges.foreach(_.push(1))
   val intermediate = System.currentTimeMillis().toDouble
