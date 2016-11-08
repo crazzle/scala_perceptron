@@ -7,7 +7,7 @@ individually.
 **To-Do**  
 [X] Wire and model perceptrons setting wedge weights manually  
 [X] Make result of the perceptron activation accessible using Trainer trait  
-[X] Fix 700 neurons per layer limit by replacing merge of observables
+[X] Fix 700 neurons per layer limit by replacing merge of observables 
 [-] Implement example of backpropagation for training  
 
 To get a grasp what this means, here an example of a neural network to detect XOR on two inputs:
