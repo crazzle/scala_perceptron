@@ -50,3 +50,8 @@ project/project
 #Ensime
 .ensime
 .ensime_cache
+src/main/java/
+src/main/resources/
+src/main/scala-2.11/
+src/test/java/
+src/test/scala-2.11/
