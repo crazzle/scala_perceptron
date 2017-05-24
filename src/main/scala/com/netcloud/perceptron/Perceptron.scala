@@ -16,7 +16,7 @@ import scala.concurrent.ExecutionContext
  * as its input.
  */
 case class Perceptron(inputs: Seq[Edge],
-                      output: Edge,
+                      output: Seq[Edge],
                       f: (Double) => Double = Perceptron.sigmoid)
                      (implicit ec : ExecutionContext) extends Activatable {
 
@@ -55,7 +55,7 @@ case class Perceptron(inputs: Seq[Edge],
    */
   override def activate(value: Double) : Double = {
     val activation = f(value)
-    output.push(activation)
+    output.foreach(_.push(activation))
     activation
   }
 

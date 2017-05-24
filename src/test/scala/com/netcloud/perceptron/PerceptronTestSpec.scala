@@ -14,11 +14,11 @@ class PerceptronTestSpec extends WordSpec {
         val edge2 = WiringEdge(1)
         val ins = List[Edge](statEdge, edge1, edge2)
 
-        val out = WiringEdge()
+        val out = Seq(WiringEdge())
         val res = Promise[Boolean]()
-        out.listen {
+        out.foreach(_.listen {
           case (activation, weight) => res.success(activation >= 0.5)
-        }
+        })
         Perceptron(ins, out)
 
         statEdge.push(1)
@@ -38,11 +38,11 @@ class PerceptronTestSpec extends WordSpec {
         val edge2 = WiringEdge(1)
         val ins = List[Edge](statEdge, edge1, edge2)
 
-        val out = WiringEdge()
+        val out = Seq(WiringEdge())
         val res = Promise[Boolean]()
-        out.listen {
+        out.foreach(_.listen {
           case (activation, weight) => res.success(activation < 0.5)
-        }
+        })
 
         Perceptron(ins, out)
 
@@ -127,20 +127,20 @@ class PerceptronTestSpec extends WordSpec {
      * 1st Layer
      */
     val hidden1 = WiringEdge(1)
-    Perceptron(Seq(inputA), hidden1, {case d => if(d == 1) 1d else 0d})
+    Perceptron(Seq(inputA), Seq(hidden1), {case d => if(d == 1) 1d else 0d})
 
     val hidden2 = WiringEdge(-2)
-    Perceptron(Seq(inputA, inputB), hidden2, {case d => if(d == 2) 1d else 0d})
+    Perceptron(Seq(inputA, inputB), Seq(hidden2), {case d => if(d == 2) 1d else 0d})
 
     val hidden3 = WiringEdge(1)
-    Perceptron(Seq(inputB), hidden3, {case d => if(d == 1) 1d else 0d})
+    Perceptron(Seq(inputB), Seq(hidden3), {case d => if(d == 1) 1d else 0d})
 
     /**
      * Last Layer (output layer)
      */
     val hiddenOutput = List[Edge](hidden1, hidden2, hidden3)
     val out = WiringEdge(1)
-    Perceptron(hiddenOutput, out, (d: Double) => d)
+    Perceptron(hiddenOutput, Seq(out), (d: Double) => d)
 
     (inputA, inputB, out)
   }
