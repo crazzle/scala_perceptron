@@ -15,8 +15,8 @@ import scala.concurrent.ExecutionContext
  * and pushes it to the outputchannel that other perceptrons can use
  * as its input.
  */
-case class Perceptron(inputs: Seq[Edge],
-                      output: Seq[Edge],
+case class Perceptron(inputs: Seq[Edge] = Seq.empty,
+                      outputs: Seq[Edge] = Seq.empty,
                       f: (Double) => Double = Perceptron.sigmoid)
                      (implicit ec : ExecutionContext) extends Activatable {
 
@@ -55,10 +55,19 @@ case class Perceptron(inputs: Seq[Edge],
    */
   override def activate(value: Double) : Double = {
     val activation = f(value)
-    output.foreach(_.push(activation))
+    outputs.foreach(_.push(activation))
     activation
   }
 
+  /**
+    * Add an inputedge and create a new percepton
+    */
+  def addInput(edge : Edge) = Perceptron(inputs:+edge, outputs, f)(ec)
+
+  /**
+    * Add an outputedge and create a new percepton
+    */
+  def addOutput(edge : Edge) = Perceptron(inputs,outputs:+edge, f)(ec)
 }
 object Perceptron {
 

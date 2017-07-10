@@ -19,9 +19,19 @@ object AutomatedExample extends App {
 
   val numInputs : Int = 2
   val layer1Size : Int  = 3
-  val layer2Size : Int  = 1
+  val numOutputs : Int  = 1
 
   val r = new Random()
+  val resultEdges = Seq.fill(numOutputs)(WiringEdge(1.0)(wec))
+  val layer2InputEdges = (for {
+    p <- 1 to numOutputs*layer1Size
+  }yield(WiringEdge(r.nextFloat())(wec)))
+  val outputPerceptron = new Perceptron(layer2InputEdges, resultEdges)(pec)
+
+  /*val layer1perceptrons = for{
+    layer1 <- layer1InputEdges
+    out <- layer1._2
+  } yield new Perceptron(inputs.flatMap(_.outputs), Seq(WiringEdge(r.nextFloat())(wec)))(pec) with Trainer
 
   /**
     * Inputs are 2 Perceptrons with 1 input edge each with a weight of 1
@@ -37,16 +47,10 @@ object AutomatedExample extends App {
     p <- 1 to numInputs
     o <- 1 to layer1Size
   }yield(p -> WiringEdge(r.nextFloat())(wec))).groupBy(_._1).mapValues(_.map(_._2))
-  val layer1perceptrons = for(layer1 <- layer1InputEdges)
-    yield 1
 
-  /**
-    * Outputlayer input edges = number of layer1 perceptrons * number of output perceptrons
-    */
-  val layer2InputEdges = (for {
-    p <- 1 to layer1Size
-    o <- 1 to layer2Size
-  }yield(p -> WiringEdge(r.nextFloat())(wec))).groupBy(_._1).mapValues(_.map(_._2))
+  val layer1perceptrons = for(layer1 <- layer1InputEdges; out <- layer1._2)
+    yield new Perceptron(inputs.flatMap(_.outputs), Seq(WiringEdge(r.nextFloat())(wec)))(pec) with Trainer
+
 
   /**
     * Output is 1 outputedge of layer 2 with weight of 1
@@ -55,7 +59,7 @@ object AutomatedExample extends App {
 
   /**
     * All Edges are created, now they have to be wired up
-    */
+    */*/
 
 
   println("press enter...")
