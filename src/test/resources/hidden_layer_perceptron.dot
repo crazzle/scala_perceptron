@@ -1,0 +1,24 @@
+digraph xorPerceptron {
+    rankdir="LR"
+
+    inputA [label="A"]
+    inputB [label="B"]
+
+    nodeOuter1 [label="Hidden 1"]
+    nodeOuter2 [label="Hidden 1"]
+    nodeOuter3 [label="Hidden 1"]
+
+    nodeOuterY [label="Output"]
+
+    inputA -> nodeOuter1
+    inputA -> nodeOuter2
+    inputA -> nodeOuter3
+    inputB -> nodeOuter1
+    inputB -> nodeOuter2
+    inputB -> nodeOuter3
+
+    nodeOuter1 -> nodeOuterY
+    nodeOuter2 -> nodeOuterY
+    nodeOuter3 -> nodeOuterY
+
+}

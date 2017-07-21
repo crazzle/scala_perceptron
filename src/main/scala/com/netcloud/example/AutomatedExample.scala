@@ -14,15 +14,27 @@ import scala.util.Random
 
 object AutomatedExample extends App {
 
-  val pec = ExecutionContexts.fromExecutor(Executors.newFixedThreadPool(4))
-  val wec = ExecutionContexts.fromExecutor(Executors.newFixedThreadPool(6))
+  implicit val ec = ExecutionContexts.fromExecutor(Executors.newFixedThreadPool(6))
 
   val numInputs : Int = 2
-  val layer1Size : Int  = 3
+  val numHidden : Int  = 3
   val numOutputs : Int  = 1
 
   val r = new Random()
-  val resultEdges = Seq.fill(numOutputs)(WiringEdge(1.0)(wec))
+
+  val inputEdges = Seq.fill(numOutputs)(WiringEdge(1.0))
+  val inputA = new Perceptron(inputs = Seq(WiringEdge(1.0)))
+  val inputB = new Perceptron(inputs = Seq(WiringEdge(1.0)))
+
+  //val outputEdges = Seq.fill(layer2Size)(WiringEdge(1.0)(wec))
+  /**
+    * Output is 1 outputedge of layer 2 with weight of 1
+    */
+  val outputInputEdges = Seq.fill(numHidden)(WiringEdge(1.0))
+  val outputOutputEdge = new WiringEdge(1.0)
+  val output = new Perceptron().addInput(outputInputEdges)
+
+  /*val resultEdges = Seq.fill(numOutputs)(WiringEdge(1.0)(wec))
   val layer2InputEdges = (for {
     p <- 1 to numOutputs*layer1Size
   }yield(WiringEdge(r.nextFloat())(wec)))
@@ -60,7 +72,7 @@ object AutomatedExample extends App {
   /**
     * All Edges are created, now they have to be wired up
     */*/
-
+  */
 
   println("press enter...")
   new BufferedReader(new InputStreamReader(System.in)).readLine()
