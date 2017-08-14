@@ -31,7 +31,7 @@ object AutomatedExample extends App {
     * Output is 1 outputedge of layer 2 with weight of 1
     */
   val outputInputEdges = Seq.fill(numHidden)(WiringEdge(1.0))
-  val outputOutputEdge = new WiringEdge(1.0)
+  val outputOutputEdge = WiringEdge(1.0)
   val output = new Perceptron().addInput(outputInputEdges)
 
   /*val resultEdges = Seq.fill(numOutputs)(WiringEdge(1.0)(wec))

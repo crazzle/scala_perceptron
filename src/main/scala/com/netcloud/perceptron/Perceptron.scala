@@ -62,23 +62,23 @@ case class Perceptron(inputs: Seq[Edge] = Seq.empty,
   /**
     * Adds an inputedges and creates a new percepton
     */
-  def addInput(edge : Edge) = addInput(Seq(edge))
+  def addInput(edge : Edge) : Perceptron = addInput(Seq(edge))
 
   /**
     * Adds an inputedges and creates a new percepton
     */
-  def addInput(edge : Seq[Edge]) = copy(inputs=inputs++edge)
+  def addInput(edge : Seq[Edge]) : Perceptron = copy(inputs=inputs++edge)
 
 
   /**
     * Adds an outputedges and creates a new percepton
     */
-  def addOutput(edge : Edge) = addOutput(Seq(edge))
+  def addOutput(edge : Edge) : Perceptron = addOutput(Seq(edge))
 
   /**
     * Adds an outputedges and creates a new percepton
     */
-  def addOutput(edge : Seq[Edge]) = Perceptron(outputs=outputs++edge)
+  def addOutput(edge : Seq[Edge]) : Perceptron = Perceptron(outputs=outputs++edge)
 
 }
 object Perceptron {
