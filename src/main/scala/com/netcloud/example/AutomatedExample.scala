@@ -5,10 +5,6 @@ import java.util.concurrent.Executors
 
 import akka.dispatch.ExecutionContexts
 import com.netcloud.perceptron.{Perceptron, WiringEdge}
-import com.netcloud.training.Trainer
-
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Promise}
 import scala.language.postfixOps
 import scala.util.Random
 
